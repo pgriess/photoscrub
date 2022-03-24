@@ -209,7 +209,6 @@ def main():
     def open_person_clicked(pi: osxphotos.PersonInfo):
         nonlocal person_window
 
-        assert person_window is None
         person_window = PersonWindow(pi)
         person_window.show()
 
