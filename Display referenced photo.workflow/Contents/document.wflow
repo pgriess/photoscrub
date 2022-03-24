@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AMApplicationBuild</key>
+	<string>512</string>
+	<key>AMApplicationVersion</key>
+	<string>2.10</string>
+	<key>AMDocumentVersion</key>
+	<string>2</string>
+	<key>actions</key>
+	<array>
+		<dict>
+			<key>action</key>
+			<dict>
+				<key>AMAccepts</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Optional</key>
+					<false/>
+					<key>Types</key>
+					<array>
+						<string>com.apple.cocoa.path</string>
+						<string>com.apple.photos.mediaitem-object</string>
+					</array>
+				</dict>
+				<key>AMActionVersion</key>
+				<string>1</string>
+				<key>AMApplication</key>
+				<array>
+					<string>Photos</string>
+				</array>
+				<key>AMParameterProperties</key>
+				<dict/>
+				<key>AMProvides</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Types</key>
+					<array>
+						<string>com.apple.photos.mediaitem-object</string>
+					</array>
+				</dict>
+				<key>AMRequiredResources</key>
+				<array/>
+				<key>ActionBundlePath</key>
+				<string>/System/Applications/Photos.app/Contents/Library/Automator/Display Referenced Photo.action</string>
+				<key>ActionName</key>
+				<string>Display Referenced Photo</string>
+				<key>ActionParameters</key>
+				<dict/>
+				<key>BundleIdentifier</key>
+				<string>com.apple.Photos.Display-Referenced-Photo</string>
+				<key>CFBundleVersion</key>
+				<string>1</string>
+				<key>CanShowSelectedItemsWhenRun</key>
+				<false/>
+				<key>CanShowWhenRun</key>
+				<true/>
+				<key>Category</key>
+				<array>
+					<string>AMCategoryPhotos</string>
+				</array>
+				<key>Class Name</key>
+				<string>Display_Referenced_Photo</string>
+				<key>InputUUID</key>
+				<string>36310F9E-241D-4474-877D-2BF353D18B3A</string>
+				<key>Keywords</key>
+				<array/>
+				<key>OutputUUID</key>
+				<string>7C13DC09-F350-4734-B7DF-DDED1F20E5A3</string>
+				<key>UUID</key>
+				<string>4C6A5E7A-09B4-44F7-A88C-84A6B6F592A5</string>
+				<key>UnlocalizedApplications</key>
+				<array>
+					<string>Photos</string>
+				</array>
+				<key>arguments</key>
+				<dict/>
+				<key>conversionLabel</key>
+				<integer>0</integer>
+				<key>isViewVisible</key>
+				<integer>1</integer>
+				<key>location</key>
+				<string>207.000000:68.000000</string>
+				<key>nibPath</key>
+				<string>/System/Applications/Photos.app/Contents/Library/Automator/Display Referenced Photo.action/Contents/Resources/Base.lproj/main.nib</string>
+			</dict>
+			<key>isViewVisible</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>connectors</key>
+	<dict/>
+	<key>workflowMetaData</key>
+	<dict>
+		<key>workflowTypeIdentifier</key>
+		<string>com.apple.Automator.workflow</string>
+	</dict>
+</dict>
+</plist>

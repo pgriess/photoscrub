@@ -39,7 +39,9 @@
 #       - Need a way to mark photos so that they don't show up in the tool
 #         anymore, e.g. a photo that has ONLY people that we don't care about.
 
+import functools
 from itertools import islice
+import os.path
 from subprocess import check_call
 import sys
 from typing import List, Optional
@@ -82,6 +84,7 @@ def pdb_photo_to_image(
 
 class PersonWindow(QWidget):
     person_info: osxphotos.PersonInfo
+    open_photo: pyqtSignal = pyqtSignal(osxphotos.PhotoInfo)
 
     def __init__(self, pi: osxphotos.PersonInfo):
         super(PersonWindow, self).__init__()
@@ -93,6 +96,10 @@ class PersonWindow(QWidget):
             row = int(idx / 3)
             col = idx % 3
 
+            cw = QWidget()
+            layout.addWidget(cw, row, col)
+
+            cl = QVBoxLayout(cw)
             label = QLabel()
             image = pdb_photo_to_image(fi.photo, fi)
             label.setPixmap(
@@ -100,7 +107,11 @@ class PersonWindow(QWidget):
                     400, 400, Qt.AspectRatioMode.KeepAspectRatio
                 )
             )
-            layout.addWidget(label, row, col)
+            cl.addWidget(label)
+
+            pb = QPushButton("Open photo")
+            pb.clicked.connect(functools.partial(self.open_photo.emit, fi.photo))
+            cl.addWidget(pb)
 
 
 class PersonPreviewTile(QWidget):
@@ -137,7 +148,7 @@ class PersonPreviewTile(QWidget):
         )
 
         pb = QPushButton("Open")
-        pb.clicked.connect(lambda: self.open_person.emit(self.person_info))
+        pb.clicked.connect(functools.partial(self.open_person.emit, self.person_info))
         layout.addWidget(pb)
 
     def resizeEvent(self, event: QResizeEvent) -> None:
@@ -213,11 +224,26 @@ def main():
 
     person_window: PersonWindow = None
 
+    @pyqtSlot(osxphotos.PhotoInfo)
+    def open_photo_clicked(pi: osxphotos.PhotoInfo) -> None:
+        check_call(
+            args=[
+                "automator",
+                "-i",
+                pi.path,
+                os.path.join(
+                    os.path.dirname(__file__), "..", "Display referenced photo.workflow"
+                ),
+            ]
+        )
+
     @pyqtSlot(osxphotos.PersonInfo)
-    def open_person_clicked(pi: osxphotos.PersonInfo):
+    def open_person_clicked(pi: osxphotos.PersonInfo) -> None:
         nonlocal person_window
 
         person_window = PersonWindow(pi)
+        person_window.open_photo.connect(open_photo_clicked)
+
         person_window.show()
 
     people_window = PeopleWindow(person_infos)
