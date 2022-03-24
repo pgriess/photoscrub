@@ -54,8 +54,8 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QMainWindow,
 )
-from PyQt6.QtGui import QImage, QPixmap, QPainter, QPen, QColor
-from PyQt6.QtCore import Qt, QPoint, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QImage, QPixmap, QPainter, QPen, QColor, QPalette, QResizeEvent
+from PyQt6.QtCore import Qt, QPoint, pyqtSignal, pyqtSlot, QRect, QSize
 
 
 def pdb_photo_to_image(
@@ -85,7 +85,6 @@ class PersonWindow(QWidget):
 
     def __init__(self, pi: osxphotos.PersonInfo):
         super(PersonWindow, self).__init__()
-        self.resize(100, 100)
 
         self.person_info = pi
 
@@ -111,6 +110,8 @@ class PersonPreviewTile(QWidget):
 
     person_info: osxphotos.PersonInfo
     open_person: pyqtSignal = pyqtSignal(osxphotos.PersonInfo)
+    image: QImage
+    label: QLabel
 
     def __init__(self, pi: osxphotos.PersonInfo, parent: Optional[QWidget] = None):
         super(PersonPreviewTile, self).__init__(parent)
@@ -124,19 +125,33 @@ class PersonPreviewTile(QWidget):
         else:
             raise Exception("Failed to find key face")
 
-        image = pdb_photo_to_image(pi.keyphoto, fi)
+        self.image = pdb_photo_to_image(pi.keyphoto, fi)
+        self.label = QLabel()
+
         layout = QVBoxLayout(self)
-        label = QLabel()
-        layout.addWidget(label)
-        label.setPixmap(
-            QPixmap.fromImage(image).scaled(
-                400, 400, Qt.AspectRatioMode.KeepAspectRatio
+        layout.addWidget(self.label)
+        self.label.setPixmap(
+            QPixmap.fromImage(self.image).scaled(
+                QSize(100, 100), Qt.AspectRatioMode.KeepAspectRatio
             )
         )
 
         pb = QPushButton("Open")
         pb.clicked.connect(lambda: self.open_person.emit(self.person_info))
         layout.addWidget(pb)
+
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        super().resizeEvent(event)
+
+        image_width = int(self.size().width() * 0.8)
+        image_height = int(self.size().height() * 0.8)
+
+        self.label.setPixmap(
+            QPixmap.fromImage(self.image).scaled(
+                QSize(image_width, image_height),
+                Qt.AspectRatioMode.KeepAspectRatio,
+            )
+        )
 
 
 class PeopleWindow(QMainWindow):
@@ -146,29 +161,22 @@ class PeopleWindow(QMainWindow):
 
     person_infos: List[osxphotos.PersonInfo]
     open_person: pyqtSignal = pyqtSignal(osxphotos.PersonInfo)
-    view: QWidget
 
-    # XXX: Why do we need the two resize() calls? Drop the parent and we clip
-    #      the child. Drop the child, and the content is way too small.
     def __init__(self, person_infos: List[osxphotos.PersonInfo]):
         super(PeopleWindow, self).__init__()
-        self.resize(1000, 1000)
-        self.setWindowTitle("Audit faces")
+        self.setWindowTitle("Photoscrub")
 
         self.person_infos = person_infos
+        cw = QWidget(self)
+        self.setCentralWidget(cw)
 
-        self.view = QWidget(self)
-        self.view.resize(1000, 1000)
-        layout = QGridLayout(self.view)
-
+        layout = QGridLayout(cw)
         for r in range(3):
             for c in range(3):
-                pi = person_infos[r * 3 + c]
-
-                pw = PersonPreviewTile(pi)
-                pw.open_person.connect(self.clicked)
-
-                layout.addWidget(pw, r, c)
+                pi = self.person_infos[r * 3 + c]
+                ppt = PersonPreviewTile(pi, cw)
+                ppt.open_person.connect(self.clicked)
+                layout.addWidget(ppt, r, c)
 
     @pyqtSlot(osxphotos.PersonInfo)
     def clicked(self, pi: osxphotos.PersonInfo):
