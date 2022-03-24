@@ -213,6 +213,21 @@ def main():
         person_window.show()
 
     people_window = PeopleWindow(person_infos)
+
+    # Resize and center the window
+    ag = people_window.screen().availableGeometry()
+    width = min(int(ag.width() * 0.8), 2000)
+    height = min(int(ag.height() * 0.8), 1000)
+    people_window.setGeometry(
+        QRect(
+            QPoint(
+                int((ag.width() - ag.x() - width) / 2 + ag.x()),
+                int((ag.height() - ag.y() - height) / 2 + ag.y()),
+            ),
+            QSize(width, height),
+        )
+    )
+
     people_window.open_person.connect(open_person_clicked)
     people_window.show()
 
